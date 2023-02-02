@@ -3,11 +3,17 @@ import { Driver } from "./Driver";
 
 export class HttpDriver implements Driver {
   private url: URL;
-  private basicAuthString: string;
+  private basicAuthToken: string;
 
-  constructor(url: URL, authString: string) {
+  constructor(url: URL) {
     this.url = url;
-    this.basicAuthString = `Basic ${authString}`;
+    this.basicAuthToken = ""
+
+    if (url.username !== "" && url.password !== "") {
+      this.basicAuthToken = btoa(
+        decodeURIComponent(`${url.username}:${url.password}`)
+      );
+    }
   }
 
   async execute(stmt: string, params?: Params): Promise<ResultSet> {
@@ -27,9 +33,14 @@ export class HttpDriver implements Driver {
 
     const statements = buildStatements(["BEGIN", ...stmts, "COMMIT"]);
 
+    let reqHeaders = new Headers();
+    if (this.basicAuthToken) {
+      reqHeaders.set("authorization", `Basic ${this.basicAuthToken}`);
+    }
+
     const response = await fetch(this.url, {
       method: "POST",
-      headers: { authorization: this.basicAuthString },
+      headers: reqHeaders,
       body: JSON.stringify(statements),
     });
 
