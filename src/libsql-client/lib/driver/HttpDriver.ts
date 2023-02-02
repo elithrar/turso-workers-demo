@@ -7,7 +7,7 @@ export class HttpDriver implements Driver {
 
   constructor(url: URL) {
     this.url = url;
-    this.basicAuthToken = ""
+    this.basicAuthToken = "";
 
     if (url.username !== "" && url.password !== "") {
       this.basicAuthToken = btoa(
@@ -34,7 +34,7 @@ export class HttpDriver implements Driver {
     const statements = buildStatements(["BEGIN", ...stmts, "COMMIT"]);
 
     let reqHeaders = new Headers();
-    if (this.basicAuthToken) {
+    if (this.basicAuthToken !== "") {
       reqHeaders.set("authorization", `Basic ${this.basicAuthToken}`);
     }
 

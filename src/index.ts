@@ -1,9 +1,11 @@
-import { connect } from "./libsql-client";
+import { connect, Connection } from "./libsql-client";
 
 export interface Env {
-  TURSO_AUTH_TOKEN: string;
   TURSO_DB_URL: string;
 }
+
+// Memoize our DB connection across instances
+let db: Connection;
 
 export default {
   async fetch(
@@ -11,13 +13,10 @@ export default {
     env: Env,
     ctx: ExecutionContext
   ): Promise<Response> {
-    const config = {
-      authString: env.TURSO_AUTH_TOKEN,
-      url: env.TURSO_DB_URL,
-    };
-
     try {
-      let db = connect(config);
+      if (db === undefined) {
+        db = connect({ url: env.TURSO_DB_URL });
+      }
 
       let now = Date.now();
       console.log(`executing query...`);
