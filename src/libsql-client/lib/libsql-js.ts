@@ -2,7 +2,13 @@ import { Driver } from "./driver/Driver";
 import { HttpDriver } from "./driver/HttpDriver";
 
 export type Config = {
-  authString: string;
+  /**
+   * URL of the database host.
+   *
+   * The URL can be in the format "https://db-name-here-primary.fly.dev"
+   * or can include the username:password in Basic authentication format - e.g.
+   * https://user:password@db-name-here-primary.fly.dev
+   */
   url: string;
 };
 
